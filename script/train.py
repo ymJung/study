@@ -5,11 +5,13 @@ from bs4 import BeautifulSoup
 import random
 from slacker import Slacker
 
-#slackApiKey.txt < msg를 받을 slack message api
+#slackApiKey.txt < slack message api
 #trainCurl.txt < 일반승차권 조회 curl 
 
-slack = Slacker(open('slackApiKey.txt','r').read().strip())
+apiKey = open('slackApiKey.txt','r').read().strip();
+slack = Slacker(apiKey)
 curlTxt = open('trainCurl.txt', 'r').read().strip()
+userId = '@zero-ym'
 
 
 def check_ticket(curlTxt):
@@ -29,7 +31,7 @@ def check_ticket(curlTxt):
             return True
     return False
 def send_slack_msg(msg):
-    slack.chat.post_message('@zero', msg)
+    slack.chat.post_message(userId, msg)
 
 
 def main():
@@ -40,7 +42,7 @@ def main():
             print(msg)
             send_slack_msg(msg)
         else :
-            sleepsec = random.randint(10,25)
+            sleepsec = random.randint(30,60)
             print("예약이 없어요 ㅠㅠ" , sleepsec , "만큼 쉽니다")
             time.sleep(sleepsec)
             
