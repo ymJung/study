@@ -1,10 +1,18 @@
 import requests
 from bs4 import BeautifulSoup
+from telegram.ext import Updater
+import configparser
 
-sindongaUrl = "http://land.naver.com/article/articleList.nhn?rletTypeCd=A01&tradeTypeCd=B1&rletNo=671&cortarNo=1168011500&hscpTypeCd=A01%3AA03%3AA04&mapX=127.0984011&mapY=37.4878068&mapLevel=13&page=&articlePage=&ptpNo=&rltrId=&mnex=&bildNo=&articleOrderCode=3&cpId=&period=&prodTab=&atclNo=&atclRletTypeCd=&location=&bbs_tp_cd=&sort=&siteOrderCode=&schlCd=&tradYy=&exclsSpc=&splySpcR=&cmplYn="
-ggachiUrl = "http://land.naver.com/article/articleList.nhn?rletTypeCd=A01&tradeTypeCd=B1&rletNo=641&cortarNo=1168011500&hscpTypeCd=A01%3AA03%3AA04&mapX=127.0878162&mapY=37.485059&mapLevel=13&page=&articlePage=&ptpNo=&rltrId=&mnex=&bildNo=&articleOrderCode=3&cpId=&period=&prodTab=&atclNo=&atclRletTypeCd=&location=&bbs_tp_cd=&sort=&siteOrderCode=&schlCd=&tradYy=&exclsSpc=&splySpcR=&cmplYn="
-daechiUrl = "http://land.naver.com/article/articleList.nhn?rletTypeCd=A01&tradeTypeCd=B1&rletNo=483&cortarNo=1168010300&hscpTypeCd=A01%3AA03%3AA04&mapX=127.0754858&mapY=37.4946581&mapLevel=13&page=&articlePage=&ptpNo=&rltrId=&mnex=&bildNo=&articleOrderCode=3&cpId=&period=&prodTab=&atclNo=&atclRletTypeCd=&location=&bbs_tp_cd=&sort=&siteOrderCode=&schlCd=&tradYy=&exclsSpc=&splySpcR=&cmplYn="
-suseoUrl = "http://land.naver.com/article/articleList.nhn?rletTypeCd=A01&tradeTypeCd=B1&rletNo=827&cortarNo=1168011400&hscpTypeCd=A01%3AA03%3AA04&mapX=127.0909994&mapY=37.4930967&mapLevel=13&page=&articlePage=&ptpNo=&rltrId=&mnex=&bildNo=&articleOrderCode=3&cpId=&period=&prodTab=&atclNo=&atclRletTypeCd=&location=&bbs_tp_cd=&sort=&siteOrderCode=&schlCd=&tradYy=&exclsSpc=&splySpcR=&cmplYn="
+cf = configparser.ConfigParser()
+cf.read('config.cfg')
+
+VALID_USER=cf.get('telegram','VALID_USER')
+TOKEN=cf.get('telegram','TOKEN')
+
+sindongaUrl = cf.get('land_url','sindongaUrl')
+ggachiUrl = cf.get('land_url', 'ggachiUrl')
+daechiUrl = cf.get('land_url', 'daechiUrl')
+suseoUrl = cf.get('land_url', 'suseoUrl')
 
 urls = {'SIN-DONG-A': sindongaUrl, 'GGA-CHI': ggachiUrl, 'DAE-CHI':daechiUrl, 'SU-SEO':suseoUrl}
 
