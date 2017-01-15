@@ -2,6 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 from telegram.ext import Updater
 import configparser
+import random
+import sys
 
 cf = configparser.ConfigParser()
 cf.read('config.cfg')
@@ -14,12 +16,17 @@ ggachiUrl = cf.get('land_url', 'ggachiUrl')
 daechiUrl = cf.get('land_url', 'daechiUrl')
 suseoUrl = cf.get('land_url', 'suseoUrl')
 
+LIMIT_PRICE = 20000
+SLEEP_SEC = random.randint(120,300)
+BREAK_LIMIT = 5
+BREAK_TIME = 0
+
 urls = {'SIN-DONG-A': sindongaUrl, 'GGA-CHI': ggachiUrl, 'DAE-CHI':daechiUrl, 'SU-SEO':suseoUrl}
 
 
 
 
-def getSaleProducts(findUrl) :
+def get_sale_products(findUrl) :
 	soup = BeautifulSoup(requests.get(findUrl).text, "html.parser")
 	table = soup.find("table", { "class" : "sale_list _tb_site_img NE=a:cpm"})
 	trs = table.find("tbody").find_all('tr')
@@ -38,7 +45,7 @@ def getSaleProducts(findUrl) :
 			continue
 	return results
 
-def printall(products):
+def get_line_up(products):
 	result = ''
 	for key in products:
 		result += '[PRODUCT]:: ' + key + '\n'
@@ -46,8 +53,45 @@ def printall(products):
 			result += '\t'+str(product) + '\n'
 	return result
 
-products = {}
-for key in urls.keys():
-	products[key] = getSaleProducts(urls[key])[0:3]
+def get_new():
+	products = {}
+	for key in urls.keys():
+		products[key] = get_sale_products(urls[key])[0:3]
+	return products
 
-print(printall(products))
+
+
+import time
+
+check_flag = False
+seen_set = set()
+
+while True:
+	try :
+		products = get_new()	
+		for key in products:
+			product = products[key]
+			for each in product:
+				check_key = key + each['price'] + each['contact'] + each['floor']
+				if (check_key not in seen_set) and (int(each['price'].replace(',','')) <= LIMIT_PRICE): 
+					check_flag = True
+					seen_set.add(check_key)
+			if check_flag is True:
+				print('break')
+				break
+		if check_flag is True:
+			msg = get_line_up(products)
+			print(msg)
+			updater = Updater(TOKEN)
+			updater.bot.sendMessage(chat_id=VALID_USER, text=msg)
+			check_flag = False
+		else :
+			print('none')
+		time.sleep(SLEEP_SEC)
+	except :
+		print('unexpect error.', sys.exc_info())
+		if BREAK_LIMIT < BREAK_TIME :
+			break
+		else :
+			BREAK_TIME += 1
+			continue
