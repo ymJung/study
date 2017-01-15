@@ -4,14 +4,17 @@ import time
 from bs4 import BeautifulSoup
 import random
 from slacker import Slacker
+import configparser
 
 #slackApiKey.txt < slack message api
 #trainCurl.txt < 일반승차권 조회 curl 
 
-apiKey = open('slackApiKey.txt','r').read().strip();
+cf = configparser.ConfigParser()
+curlTxt = cf.get('curl', 'train')
+userId = cf.get('slack', 'userId')
+apiKey = cf.get('slack', 'TOKEN')
+
 slack = Slacker(apiKey)
-curlTxt = open('trainCurl.txt', 'r').read().strip()
-userId = '@zero-ym'
 
 
 def check_ticket(curlTxt):
