@@ -31,7 +31,10 @@ def check_ticket(curlTxt):
             return True
     return False
 def send_slack_msg(msg):
-    slack.chat.post_message(userId, msg)
+	try :
+		slack.chat.post_message(userId, msg)
+	except :
+		print('send mesage fail.')	
 
 
 def main():
