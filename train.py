@@ -6,9 +6,6 @@ import random
 from slacker import Slacker
 import configparser
 
-#slackApiKey.txt < slack message api
-#trainCurl.txt < 일반승차권 조회 curl 
-
 cf = configparser.ConfigParser()
 curlTxt = cf.get('curl', 'train')
 userId = cf.get('slack', 'userId')
