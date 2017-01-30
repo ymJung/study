@@ -1,4 +1,6 @@
 study
 =====
 
-회사 또는 집에서 공부 소스 업로드
+home study source
+
+
