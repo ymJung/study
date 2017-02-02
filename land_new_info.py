@@ -15,6 +15,8 @@ TOKEN=cf.get('telegram','TOKEN')
 
 landUrls = cf.get('land_url','URLS')
 landUrls = landUrls.split(',')
+dbLandUrls = cf.get('land_url','DB_URLS')
+dbLandUrls = dbLandUrls.split(',')
 
 LIMIT_PRICE = 20000
 SLEEP_SEC = random.randint(120,300)
@@ -43,6 +45,15 @@ def get_sale_products(findUrl) :
 		except AttributeError:
 			continue
 	return results
+def get_dab_sale_products(findUrl) :
+        js = requests.get(url).json()
+        rooms = js['rooms']
+        results = list()
+        for room in rooms:                
+                results.append({'name': room['seq'], 'title':room['title'], 'price':room['price_title'].replace('억',''),
+                                'contact': room['user_id'], 'floor':room['room_desc'].split('|')[1], 'address':room['address']})
+        return results
+
 
 def get_line_up(products):
 	result = ''
@@ -55,6 +66,9 @@ def get_new():
 	for landUrl in landUrls: 
 		getProducts = get_sale_products(landUrl)[0:3]
 		products.extend(getProducts)
+	for landUrl in dbLandUrls:
+                getProducts = get_dab_sale_products(landUrl)
+                products.extend(getProducts)
 	return products
 
 def is_break():
