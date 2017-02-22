@@ -29,7 +29,7 @@ def get_sale_products(findUrl) :
 	soup = BeautifulSoup(requests.get(findUrl).text, "html.parser")
 	table = soup.find("table", { "class" : "sale_list _tb_site_img NE=a:cpm"})
 	trs = table.find("tbody").find_all('tr')
-	name = soup.find(id='complexListLayer').find('a', {'class':'on'}).text
+	name = soup.find(id='complexListLayer').find('a', {'class':'on'}).text.strip()
 	results = list()
 
 	for tr in trs:
