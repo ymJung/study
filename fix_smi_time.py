@@ -2,9 +2,11 @@ import codecs
 import sys
 
 
-file_name = 'blah.smi'
 if sys.argv[0] is not None:
     file_name = sys.argv[0]
+else:
+	file_name = 'blah.smi'
+
 
 min = 0
 sec = 0 
