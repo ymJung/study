@@ -16,8 +16,11 @@ TOKEN=cf.get('telegram','TOKEN')
 landUrls = cf.get('land_url','URLS')
 landUrls = landUrls.split(',')
 
+if sys.argv[0] is not None:
+    LIMIT_PRICE = sys.argv[0]
+else:
+	LIMIT_PRICE = 20000
 
-LIMIT_PRICE = 20000
 SLEEP_SEC = random.randint(120,300)
 
 RETRY_LIMIT_CNT=5
