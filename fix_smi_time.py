@@ -1,7 +1,8 @@
 import codecs
 import sys
 
-
+SEC = 60
+MIL_SEC = 1000
 if sys.argv[0] is not None:
     file_name = sys.argv[0]
 else:
@@ -12,7 +13,7 @@ min = 0
 sec = 0 
 
 
-fix_time = min * 60 * 1000 + (sec * 1000)
+fix_time = min * SEC * MIL_SEC + (sec * MIL_SEC)
 
 new_file = open('FIX_' + file_name, 'w', encoding='utf-8', newline='')
 prefix = '<SYNC Start='
