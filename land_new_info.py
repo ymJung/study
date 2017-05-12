@@ -11,21 +11,11 @@ cf.read('config.cfg')
 
 
 landUrls = cf.get('land_url','URLS')
-landUrls = landUrls.split(',')
-
-if sys.argv[0] is not None:
-    LIMIT_PRICE = sys.argv[0]
-else:
-	LIMIT_PRICE = 20000
-
-SLEEP_SEC = random.randint(120,300)
-
-RETRY_LIMIT_CNT=5
-RETRY_LIMIT={datetime.date.today(): RETRY_LIMIT_CNT}
+land_price_tuples = landUrls.split(',')
 
 
 
-def get_sale_products(findUrl) :
+def get_sale_products(findUrl, limit_price) :
 	soup = BeautifulSoup(requests.get(findUrl).text, "html.parser")
 	table = soup.find("table", { "class" : "sale_list _tb_site_img NE=a:cpm"})
 	trs = table.find("tbody").find_all('tr')
@@ -54,8 +44,8 @@ def get_line_up(products):
 
 def get_new():
 	products=[] 
-	for landUrl in landUrls: 
-		getProducts = get_sale_products(landUrl)[0:3]
+	for idx in range(int(len(land_price_tuples)/2)):
+		getProducts = get_sale_products(land_price_tuples[idx*2], land_price_tuples[(idx*2)+1])[0:3]
 		products.extend(getProducts)
 
 	return products
@@ -77,26 +67,8 @@ def get_date_retry_limit(date):
 
 check_flag = False
 seen_set = set()
-while True:
-	try :
-		products = get_new()	
-		for product in products:
-			check_key = product['name'] + product['price'] + product['contact'] + product['floor']
-			if (check_key not in seen_set) and (int(product['price'].replace(',','')) <= LIMIT_PRICE): 
-				check_flag = True
-				seen_set.add(check_key)
-		if check_flag is True:
-			msg = get_line_up(products)
-			print(msg)
-			check_flag = False
-		else :
-			print('none')
-			time.sleep(SLEEP_SEC)
-	except :
-		print('unexpected error', sys.exc_info()[0])
-		print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno))
-		if is_break():
-			break
-		continue
+products = get_new()	
+for product in products:
+	print(product['name'], product['price'])
 
 
