@@ -1,6 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-from telegram.ext import Updater
 import configparser
 import random
 import sys
@@ -10,8 +9,6 @@ import time
 cf = configparser.ConfigParser()
 cf.read('config.cfg')
 
-VALID_USER=cf.get('telegram','VALID_USER')
-TOKEN=cf.get('telegram','TOKEN')
 
 landUrls = cf.get('land_url','URLS')
 landUrls = landUrls.split(',')
@@ -91,8 +88,6 @@ while True:
 		if check_flag is True:
 			msg = get_line_up(products)
 			print(msg)
-			updater = Updater(TOKEN)
-			updater.bot.sendMessage(chat_id=VALID_USER, text=msg)
 			check_flag = False
 		else :
 			print('none')
