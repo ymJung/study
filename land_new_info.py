@@ -66,10 +66,20 @@ def get_date_retry_limit(date):
         RETRY_LIMIT.update({dateStr: RETRY_LIMIT_CNT})
     return RETRY_LIMIT[dateStr]
 
+import telegram
+
+TOKEN = cf.get('telegram', 'TOKEN')
+VALID_USER = cf.get('telegram', 'VALID_USER')
+
+tb = telegram.Bot(token=TOKEN)
+
 check_flag = False
 seen_set = set()
-products = get_new()	
+products = get_new()
+result = ''
 for product in products:
-    print(product['name'], product['price'])
+    result += product['name'] + ':::' + product['price']
+
+tb.sendMessage(chat_id=VALID_USER, text=result)
 
 
