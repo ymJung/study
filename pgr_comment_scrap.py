@@ -7,19 +7,34 @@ import urllib.parse
 from urllib import parse
 
 
-search_str = '2019 우리은행 챔피언스 코리아 서머 플레이오프 2R - DAMWON vs. SKT'
+search_str = '' #검색할 불판명 쓸것 (숫자제외)
 parse_str = parse.quote(search_str)
-search_url = 'https://pgr21.com/pb/pb.php?id=bulpan&ss=on&sc=on&keyword=' + parse_str
-pan_url = 'https://pgr21.com/pb/pb.php?id=bulpan&no='
+search_url = 'https://pgr21.com/pb/pb.php?id=bulpan&page=1&ss=on&sc=on&keyword=' + parse_str
 
+pan_url = 'https://pgr21.com/pb/pb.php?id=bulpan&no='
+default_page = 'https://pgr21.com/'
 def get_soup(url) :        
     with urllib.request.urlopen(url) as response:
+        print('crawlling.. ' + url)
         time.sleep(random.randrange(0, 5)) # 너무 자주 긁어서 디도스로 오인받아 차단당할라..
         html = response.read()
         return BeautifulSoup(html, 'html.parser')
 
-soup = get_soup(search_url)
-a_tags = soup.find_all('a')
+soup = get_soup(search_url) # TODO. 검색에서 두페이지 이상 일때, atgs를 더 추가해주자.
+pages = soup.find(class_='pagination')
+
+DEFAULT_PAGE_A_TAG_CNT = 3
+a_tags = []
+
+if len(pages) > DEFAULT_PAGE_A_TAG_CNT:
+    for page in pages:
+        if 'page=' in page['href'] :
+            page_per_pan_soup = get_soup(default_page + page['href'])
+            p_p_tags = page_per_pan_soup.find_all('a')
+            a_tags.extend(p_p_tags)
+first_page_tags = soup.find_all('a')
+
+a_tags.extend(first_page_tags)
 
 pan_urls = []
 for at in a_tags:
