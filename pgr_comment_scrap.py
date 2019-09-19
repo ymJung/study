@@ -20,10 +20,6 @@ def get_soup(url) :
         html = response.read()
         return BeautifulSoup(html, 'html.parser')
 
-soup = get_soup(search_url) # TODO. 검색에서 두페이지 이상 일때, atgs를 더 추가해주자.
-pages = soup.find(class_='pagination')
-
-DEFAULT_PAGE_A_TAG_CNT = 3
 a_tags = []
 
 if len(pages) > DEFAULT_PAGE_A_TAG_CNT:
@@ -39,7 +35,8 @@ a_tags.extend(first_page_tags)
 pan_urls = []
 for at in a_tags:
     if search_str in  at.text :
-        pan_no = at['href'].split('no=')[1].split('&')[0]
+        href_url = at['href']
+        pan_no = href_url[href_url.rfind('/') + 1: href_url.find('?')]        
         pan_urls.append(pan_url + pan_no)
 
 f = open(search_str, 'w', encoding='utf8')
