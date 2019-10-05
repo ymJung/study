@@ -1,12 +1,12 @@
 import xlrd
 
 HEADER_ROW = 0
-file_name = '자동생성 검수 매칭 요청 건.xlsx'
+file_name = 'mapp.xlsx'
 workbook = xlrd.open_workbook(file_name)
 sheet = workbook.sheet_by_index(0)
 
 
-SKIP_VALUE = ['SYSDATE']
+SKIP_VALUE = ['SYSDATE', 'SEQ_PD_PTNR_ATTR_MAPP.NEXTVAL']
 SKIP_COL_NUM = []
 
 def is_number(input_value):
@@ -42,13 +42,6 @@ def attatch_text(xls_input, col_num):
     return result + ","
     
 
-###
-#INSERT INTO PD_PTNR_ATTR_MAPP
-		#(PTNR_ATTR_MAPP_SEQ, PTNR_MNFCO_NM, PTNR_BRAND_NM, CTLG_ATTR_NO1, CTLG_ATTR_VAL_NO1, CTLG_ATTR_NO2, CTLG_ATTR_VAL_NO2, CTLG_ATTR_NO3, CTLG_ATTR_VAL_NO3, ATTR_VAL_DTL_NM, CREATE_DT, CREATE_NO, UPDATE_DT, UPDATE_NO)
-		#VALUES
-        # (0, '', '', 0, 0, 0, 0, 0, 0, '', '', 0, '', 0);
-	
-###
 
 HEADER_COL_LEN = 0
 
