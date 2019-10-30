@@ -1,12 +1,12 @@
 import xlrd
 
 HEADER_ROW = 0
-file_name = 'mapp.xlsx'
+file_name = ''
 workbook = xlrd.open_workbook(file_name)
 sheet = workbook.sheet_by_index(0)
 
 
-SKIP_VALUE = ['SYSDATE', 'SEQ_PD_PTNR_ATTR_MAPP.NEXTVAL']
+SKIP_VALUE = ['', '']
 SKIP_COL_NUM = []
 
 def is_number(input_value):
