@@ -2,11 +2,13 @@ import xlrd
 
 HEADER_ROW = 0
 file_name = ''
+SKIP_VALUE = ['', 'SYSDATE']
+SKIP_NUMBER = []
 workbook = xlrd.open_workbook(file_name)
 sheet = workbook.sheet_by_index(0)
 
 
-SKIP_VALUE = ['', '']
+
 SKIP_COL_NUM = []
 
 def is_number(input_value):
@@ -38,7 +40,10 @@ def attatch_text(xls_input, col_num):
         elif start_with_select(xls_input):
             result = str(xls_input)        
         else :
-            result = "'" + xls_input + "'"
+            if "'" in xls_input:
+                result = xls_input
+            else :
+                result = "'" + xls_input + "'"
     return result + ","
     
 
