@@ -22,6 +22,10 @@ def get_soup(url) :
 
 a_tags = []
 
+soup = get_soup(search_url)
+pages = soup.find(class_='pagination')
+DEFAULT_PAGE_A_TAG_CNT = 3
+
 if len(pages) > DEFAULT_PAGE_A_TAG_CNT:
     for page in pages:
         if 'page=' in page['href'] :
