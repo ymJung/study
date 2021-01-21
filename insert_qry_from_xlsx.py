@@ -1,11 +1,11 @@
 import xlrd
 
 HEADER_ROW = 0
-file_name = ''
-SKIP_VALUE = ['SYSDATE']
+file_name = '201104prd.xlsx'
+SKIP_VALUE = ['SYSDATE', 'NULL']
 SKIP_NUMBER = []
 workbook = xlrd.open_workbook(file_name)
-sheet = workbook.sheet_by_index(1)
+sheet = workbook.sheet_by_index(0)
 
 
 
@@ -71,7 +71,8 @@ for row in range((HEADER_ROW + 1), sheet.nrows):
             insert_qry += ');\n'
 
 
-f = open(file_name + '.sql', 'a')
+f = open(file_name + '.sql', 'w')
 f.write(insert_qry)
+f.close()
 
 
