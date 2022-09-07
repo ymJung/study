@@ -24,7 +24,7 @@ https://dublin-java.tistory.com/48
 
 
 ### 부하 발생시 대처 순서
-1. rdb라면 read  replica로 read  write api를 분산해본다.
+1. rdb라면 read  replication 로 read  write api를 분산해본다.
 2. redis로 잦은 select할 오브젝트 캐시로 db부하를 완화시킨다
 3. db를 대규모 트래픽에 대비해 스케일아웃이 가능하도록 nosql로 재 설계해보고
 4. db가 뻗을거 대비해 빠른 복구가 가능한 db  proxy를 이용하거나 철저한 백업과 cdc기능으로 sync할 db를 준비해둔다.
@@ -50,7 +50,7 @@ https://dublin-java.tistory.com/48
     - 각각의 상태를 메시지 형태로
         * 코레오그래피 (choregraphy:안무)  : 의사결정을 참여자. 이벤트 교환 방식 통신
             - 중앙편성자가 없음. 다음참여자를 트리거 하는 이벤트 발행
-            - 발행 구독 형태로 소통
+            - publish subscribenm 형태로 소통
             * 주의점
                 - 원자적으로 일어남
                 - 트렌젝셔널 메시징 - 수신받은 데이터와 자신이 가진 데이터를 연관 지을수 있어야함.
@@ -300,7 +300,20 @@ helm
 - CSRF : Cross site request forgery
     - 처음으로 웹 브라우저와 백엔드가 통신을 했을때 발행, 백엔드와 통신할떄 유지
     - CookieCsrfTokenRepository // XSRF-TOKEN
+### tx isolation
+```
+READ UNCOMMITTED
+    - 커밋 롤백 관계없이 다른트렌잭션의 값을 읽는다. 정합성이 문제가 많다. DIRTY READ발생 (tx완료되지 않았는데, 다른트렌젝션에서 볼수 있다.)
+READ COMMITTED
+    - [기본] 실제 테이블값이 아니라 Undo영역의 레코드 값을 가져옴. 같은레코드에 트렌젝션2가 커밋전에 들어오면 정합성이 어긋난다.
+REPEATABLE READ > MVCC (MultiVersionConcurrencyControl)
+    - 트렌젝션마다 id를 부여, 작은 트렌젝션 번호에서 변경한것만 읽는다. undo에 백업하고 실제 레코드값을 변경한다.
+    - undo 에 백업된 레코드가 많아지면 서버 처리성능이 떨어진다.
+    - PHANTOM READ가 발생 - 다른트렌젝션에서 변경한게 보였다가 안보임/ 쓰기잠금을 걸어야한다.
+SERIALIZABLE
+    - 엄격한 격리
 
+```
 
 # 대화가 통하는사람
 
