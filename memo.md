@@ -214,6 +214,14 @@ helm
 #### Optional
 > Optional은 null 또는 값을 감싸서 NPE(NullPointerException)로부터 부담을 줄이기 위해 등장한 Wrapper 클래스이다.
 - NPE 방어 패턴에 비해 훨씬 간결하고 명확해진 코드
+#### Generic
+``` <T>	Type <E>	Element <K>	Key<V>	Value  <N>	Number
+1. 제네릭을 사용하면 잘못된 타입이 들어올 수 있는 것을 컴파일 단계에서 방지할 수 있다.
+2. 클래스 외부에서 타입을 지정해주기 때문에 따로 타입을 체크하고 변환해줄 필요가 없다. 즉, 관리하기가 편하다.
+3. 비슷한 기능을 지원하는 경우 코드의 재사용성이 높아진다.
+```
+
+ 
 
 ### kafka
 
@@ -314,6 +322,12 @@ SERIALIZABLE
     - 엄격한 격리
 
 ```
+### spring boot 3 rc1 (22y11m)
+- jdk 17
+- javax -> jakarta
+- graal VM 
+    - binary 
+    - spring native 에 강점
 
 # 대화가 통하는사람
 
@@ -333,3 +347,34 @@ SERIALIZABLE
 ## java8에 대한 이해 ? 
 ### ex. optional-> orElse, isPresent / filter / stream 
 ## GC에 대한 이해
+
+# 
+
+
+
+
+
+
+
+```
+
+$ git remote add origin https://github.com/kakaopaycoding-server/2022-metalbird0-gmail.com.git
+
+
+
+https://github.com/kakaopaycoding-server/2022-metalbird0-gmail.com.git
+1) 커피 메뉴 목록 조회 API
+● 커피 정보(메뉴ID, 이름, 가격)을 조회하는 API를 작성합니다.
+2) 포인트 충전 하기 API
+● 결제는 포인트로만 가능하며, 포인트를 충전하는 API를 작성합니다.
+● 사용자 식별값, 충전금액을 입력 받아 포인트를 충전합니다. (1원=1P)
+3) 커피 주문/결제 하기 API
+● 사용자 식별값, 메뉴ID를 입력 받아 주문을 하고 결제를 진행합니다.
+● 결제는 포인트로만 가능하며, 충전한 포인트에서 주문금액을 차감합니다.
+● 주문 내역을 데이터 수집 플랫폼으로 실시간 전송하는 로직을 추가합니다.
+(Mock API 등을 사용하여 사용자 식별값, 메뉴ID, 결제금액을 전송합니다.)
+4) 인기메뉴 목록 조회 API
+● 최근 7일간 인기있는 메뉴 3개를 조회하는 API 작성합니다.
+● 메뉴별 주문 횟수가 정확해야 합니다.
+```
+
