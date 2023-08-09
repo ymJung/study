@@ -33,3 +33,37 @@ python server.py >> http://localhost:7860/?__theme=dark
 https://www.docker.com/products/docker-desktop/
     - docker windows hypervisor is not present >> 가상os 를 활성화 해야한다. 
         - BIOS > cpu advanced > SVM Mode > Enable
+
+
+
+
+sudo apt-get update
+
+sudo apt-get install -y \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg-agent \
+    software-properties-common
+
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
+sudo add-apt-repository \
+"deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+$(lsb_release -cs) \
+stable"
+
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+
+sudo service docker start
+
+distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+
+curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
+
+curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+
+
+
+ (xx) sudo apt-get install -y nvidia-container-toolkit
+ (oo) sudo apt-get update && sudo apt-get install -y nvidia-container-toolkit
