@@ -64,6 +64,57 @@ curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
 curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
 
 
-
  (xx) sudo apt-get install -y nvidia-container-toolkit
  (oo) sudo apt-get update && sudo apt-get install -y nvidia-container-toolkit
+
+sudo docker run --gpus all nvidia/cuda:11.8.0-base-ubuntu20.04 nvidia-smi
+
+
+
+
+torchrun --nproc_per_node 1 example_text_completion.py \
+    --ckpt_dir /home/ymjung/github/models/meta-llama_Llama-2-7b-chat-hf/ \
+    --tokenizer_path tokenizer.model \
+    --max_seq_len 128 --max_batch_size 4
+
+``` py
+from transformers import AutoTokenizer
+import transformers
+import torch
+
+model = "/home/ymjung/github/models/meta-llama_Llama-2-7b-chat-hf/"
+
+tokenizer = AutoTokenizer.from_pretrained(model)
+pipeline = transformers.pipeline(
+    "text-generation",
+    model=model,
+    torch_dtype=torch.float16,
+    device_map="auto",
+)
+
+def send_msg(msg):
+    sequences = pipeline(
+        msg += '\n',
+        do_sample=True,
+        top_k=10,
+        num_return_sequences=1,
+        eos_token_id=tokenizer.eos_token_id,
+        max_length=1000,
+    )
+    res = ''
+    for seq in sequences:
+        res += seq['generated_text']
+    return res
+```
+
+# 트레이닝 시키기.
+pip install trl
+git clone https://github.com/lvwerra/trl
+
+python trl/examples/scripts/sft_trainer.py \
+    --model_name meta-llama/Llama-2-7b-hf \
+    --dataset_name timdettmers/openassistant-guanaco \
+    --load_in_4bit \
+    --use_peft \
+    --batch_size 4 \
+    --gradient_accumulation_steps 2
