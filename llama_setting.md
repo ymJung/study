@@ -118,3 +118,40 @@ python trl/examples/scripts/sft_trainer.py \
     --use_peft \
     --batch_size 4 \
     --gradient_accumulation_steps 2
+
+
+# ko-alpaca - llama2 
+pip install -q autotrain-advanced
+autotrain setup --update-torch
+
+!autotrain llm --train \
+    --project_name "ko-llama2-finetune" \
+    --model "TinyPixel/Llama-2-7B-bf16-sharded" \
+    --data_path "royboy0416/ko-alpaca" \
+    --text_column "text" \
+    --use_peft \
+    --use_int4 \
+    --learning_rate 2e-4 \
+    --train_batch_size 16 \
+    --num_train_epochs 2 \
+    --trainer sft \
+    --model_max_length 2048
+
+
+https://github.com/huggingface/autotrain-advanced/blob/f1367b590dfc53d240e9684779991da540590386/src/autotrain/cli/run_llm.py#L21
+
+
+
+jupyter notebook permissionerror
+>> export XDG_RUNTIME_DIR=""
+
+
+
+# module ffmpeg has no attribute error
+pip install ffmpeg
+pip uninstall ffmpeg -y
+pip install python-ffmpeg
+pip uninstall python-ffmpeg -y
+pip install ffmpeg-python
+pip uninstall ffmpeg-python -y 로 한 후
+pip install ffmpeg-python
