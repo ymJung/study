@@ -158,7 +158,7 @@ pip install ffmpeg-python
 
 
 
-``` sh ubuntu cuda install
+``` sh ubuntu cuda install >> 12.2
 wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin
 sudo mv cuda-ubuntu2004.pin /etc/apt/preferences.d/cuda-repository-pin-600
 wget https://developer.download.nvidia.com/compute/cuda/12.2.1/local_installers/cuda-repo-ubuntu2004-12-2-local_12.2.1-535.86.10-1_amd64.deb
@@ -167,3 +167,26 @@ sudo cp /var/cuda-repo-ubuntu2004-12-2-local/cuda-*-keyring.gpg /usr/share/keyri
 sudo apt-get update
 sudo apt-get -y install cuda
 ```
+
+
+
+
+(llama) ymjung@DESKTOP-A9N1I0N:~/github/GroundingDINO$ nvcc --version
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2023 NVIDIA Corporation
+Built on Tue_Jul_11_02:20:44_PDT_2023
+Cuda compilation tools, release 12.2, V12.2.128
+Build cuda_12.2.r12.2/compiler.33053471_0
+
+
+>>> import torch
+>>> torch.__version__
+'2.0.1+cu117'
+
+cuda 는 12.2 / torch 는 117
+버전을 맞춰줘야 한다. https://download.pytorch.org/whl/cu117/torch_stable.html
+
+https://github.com/IDEA-Research/GroundingDINO
+
+cuda 11.3 >>> conda install pytorch==1.9.0
+ pip install numpy==1.20.0
