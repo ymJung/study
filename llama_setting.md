@@ -178,6 +178,12 @@ Built on Tue_Jul_11_02:20:44_PDT_2023
 Cuda compilation tools, release 12.2, V12.2.128
 Build cuda_12.2.r12.2/compiler.33053471_0
 
+conda install:: $ 
+sudo apt-get install libgl1-mesa-glx libegl1-mesa libxrandr2 libxrandr2 libxss1 libxcursor1 libxcomposite1 libasound2 libxi6 libxtst6
+wget https://repo.anaconda.com/archive/Anaconda3-2020.11-Linux-x86_64.sh
+
+pip3 install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu120
+
 
 >>> import torch
 >>> torch.__version__
@@ -190,3 +196,23 @@ https://github.com/IDEA-Research/GroundingDINO
 
 cuda 11.3 >>> conda install pytorch==1.9.0
  pip install numpy==1.20.0
+
+
+
+# conda install::
+sudo apt-get install libgl1-mesa-glx libegl1-mesa libxrandr2 libxrandr2 libxss1 libxcursor1 libxcomposite1 libasound2 libxi6 libxtst6
+wget https://repo.anaconda.com/archive/Anaconda3-2020.11-Linux-x86_64.sh
+
+# 11.7 cuda install::
+https://developer.nvidia.com/cuda-11-7-0-download-archive?target_os=Linux&target_arch=x86_64&Distribution=WSL-Ubuntu&target_version=2.0&target_type=deb_local
+# torch install::
+cuda 11.7 >>  conda install pytorch torchvision torchaudio pytorch-cuda=11.7 -c pytorch -c nvidia
+
+
+> nvcc - not found
+export CUDA_HOME=/usr/local/cuda
+export PATH=/usr/local/cuda/bin:$PATH
+
+
+export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+
