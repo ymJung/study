@@ -36,7 +36,7 @@ options.add_argument('--headless')  # (headless 모드)
 
 driver = webdriver.Chrome(service=Service(), options=options)
 
-home = #"" 
+home = #"https://blacktoon260.com/" 
 topic =  #
 first_page = #
 last_page = #

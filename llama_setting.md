@@ -210,9 +210,11 @@ cuda 11.7 >>  conda install pytorch torchvision torchaudio pytorch-cuda=11.7 -c 
 
 
 > nvcc - not found
+# vi ~/.bashrc
 export CUDA_HOME=/usr/local/cuda
 export PATH=/usr/local/cuda/bin:$PATH
-
-
 export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+
+
+
 
