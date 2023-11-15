@@ -41,41 +41,46 @@ def get_src_url_from_home(home_url):
         a_tag = each[each.find('<a href="') + 1:each.find('html')] + 'html'        
         res.append(a_tag)
     return res
+def mk_dir(d_path):
+    if not os.path.exists(d_path):
+        os.makedirs(d_path)        
+        
 
 
 
-
-
-chrome_driver_path = 'chromedriver.exe' 
+chrome_driver_path = 'D:\Dev\chromedriver.exe' 
 options = webdriver.ChromeOptions() 
 options.add_argument('--headless')  # (headless 모드)
 
 driver = webdriver.Chrome(service=Service(), options=options)
 
-home = ''# 
-topic =  '' #
+home = 
+topic = 
 # 웹 페이지 URL 
 main_url = "https://{}/webtoons"
 home_url = "https://{}/webtoon/{}.html".format(home, topic)
 
-if not os.path.exists(str(topic)):
-    os.makedirs(str(topic))
+mk_dir(topic)
+
 tot_srcs = get_src_url_from_home(home_url)
 # 한번 초기화
 driver = webdriver.Chrome(service=Service(), options=options)
 idx = 0
+f = open('srcs.txt', 'w')
+tot_srcs.reverse()
+os.chdir(os.path.join(os.getcwd(), topic))
+now = 0
 for page_url in tot_srcs:
-    idx+=1
     format_url = main_url.format(home) + page_url
-    print('call ', format_url)
+    now += 1
+    print(now , '/', len(tot_srcs), ':', format_url)
     src_urls = get_src_urls(format_url)
-    tot_srcs += src_urls
     for img_src in src_urls: #download
+        idx+=1
         img_name = img_src[img_src.rfind('/')+1:]
-        img_path = os.path.join(str(topic), img_name)
-        os.system('curl ' + img_src + ' > ' + str(idx) + '_'+ img_path) 
+        cmd = 'curl -k -L -s --compressed ' + img_src + ' > ' + str(idx) + '_'+ img_name
+        os.system(cmd) 
+        f.write(img_src + '\n')
 driver.quit()
     
-f = open('srcs.txt', 'w')
-for each in tot_srcs: f.write(each + '\n')
 
