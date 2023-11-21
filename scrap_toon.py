@@ -54,8 +54,8 @@ options.add_argument('--headless')  # (headless 모드)
 
 driver = webdriver.Chrome(service=Service(), options=options)
 
-home = 
-topic = 
+home = '.com'# https://booktoki314.com/ 
+topic =  '' #
 # 웹 페이지 URL 
 main_url = "https://{}/webtoons"
 home_url = "https://{}/webtoon/{}.html".format(home, topic)
@@ -65,20 +65,27 @@ mk_dir(topic)
 tot_srcs = get_src_url_from_home(home_url)
 # 한번 초기화
 driver = webdriver.Chrome(service=Service(), options=options)
-idx = 0
 f = open('srcs.txt', 'w')
 tot_srcs.reverse()
 os.chdir(os.path.join(os.getcwd(), topic))
-now = 0
+
+last_index = 2872
+start = ''
+if last_index > 0: now = last_index 
+else : now = 0
+print(tot_srcs)
+if len(start) > 0 : tot_srcs = tot_srcs[tot_srcs.index(start)+1:] 
+print(tot_srcs)
+
 for page_url in tot_srcs:
     format_url = main_url.format(home) + page_url
     now += 1
     print(now , '/', len(tot_srcs), ':', format_url)
     src_urls = get_src_urls(format_url)
     for img_src in src_urls: #download
-        idx+=1
+        now+=1
         img_name = img_src[img_src.rfind('/')+1:]
-        cmd = 'curl -k -L -s --compressed ' + img_src + ' > ' + str(idx) + '_'+ img_name
+        cmd = 'curl -k -L -s --compressed ' + img_src + ' > ' + str(now) + '_'+ img_name
         os.system(cmd) 
         f.write(img_src + '\n')
 driver.quit()
