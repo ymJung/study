@@ -54,8 +54,8 @@ options.add_argument('--headless')  # (headless 모드)
 
 driver = webdriver.Chrome(service=Service(), options=options)
 
-home = '.com'# https://booktoki314.com/ 
-topic =  '' #
+home = '.com'# https://.com/ 
+topic =  '9098' #
 # 웹 페이지 URL 
 main_url = "https://{}/webtoons"
 home_url = "https://{}/webtoon/{}.html".format(home, topic)
@@ -69,7 +69,7 @@ f = open('srcs.txt', 'w')
 tot_srcs.reverse()
 os.chdir(os.path.join(os.getcwd(), topic))
 
-last_index = 2872
+last_index = ''
 start = ''
 if last_index > 0: now = last_index 
 else : now = 0
