@@ -2,6 +2,8 @@ from selenium import webdriver
 import os
 from selenium.webdriver.chrome.service import Service
 import time
+from urllib.request import Request, urlopen
+from urllib.parse import quote
 
 def scroll_end(driver):
     scroll_pause_time = 0.3  # 스크롤 간격 설정 (초)
@@ -54,8 +56,8 @@ options.add_argument('--headless')  # (headless 모드)
 
 driver = webdriver.Chrome(service=Service(), options=options)
 
-home = '.com'# https://.com/ 
-topic =  '9098' #
+home = '.com'#
+topic =  '' #
 # 웹 페이지 URL 
 main_url = "https://{}/webtoons"
 home_url = "https://{}/webtoon/{}.html".format(home, topic)
@@ -68,9 +70,10 @@ driver = webdriver.Chrome(service=Service(), options=options)
 f = open('srcs.txt', 'w')
 tot_srcs.reverse()
 os.chdir(os.path.join(os.getcwd(), topic))
+headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
 
-last_index = ''
-start = ''
+last_index = 0
+start = ''# 
 if last_index > 0: now = last_index 
 else : now = 0
 print(tot_srcs)
@@ -84,10 +87,12 @@ for page_url in tot_srcs:
     src_urls = get_src_urls(format_url)
     for img_src in src_urls: #download
         now+=1
-        img_name = img_src[img_src.rfind('/')+1:]
-        cmd = 'curl -k -L -s --compressed ' + img_src + ' > ' + str(now) + '_'+ img_name
-        os.system(cmd) 
+        img_name = img_src[img_src.rfind('/')+1:]        
+        with open(str(now) + '_'+ img_name, 'wb') as img_f:
+            img_url = quote(img_src, safe=':/')
+            request = Request(img_url, headers=headers)
+            response = urlopen(request)
+            img_f.write(response.read())
+
         f.write(img_src + '\n')
 driver.quit()
-    
-
