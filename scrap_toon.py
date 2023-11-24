@@ -5,8 +5,10 @@ import time
 from urllib.request import Request, urlopen
 from urllib.parse import quote
 
+
+SCROLL_PAUSE_SEC = 0.3  # 스크롤 간격 설정 (초)
 def scroll_end(driver):
-    scroll_pause_time = 0.3  # 스크롤 간격 설정 (초)
+    
     screen_height = driver.execute_script("return window.screen.height;")  # 화면 높이 가져오기
     i = 1
     while True:
@@ -15,11 +17,13 @@ def scroll_end(driver):
         # 스크롤을 페이지의 끝까지 내리기
         driver.execute_script(f"window.scrollTo(0, {i * screen_height});")
         # 잠시 기다리기
-        time.sleep(scroll_pause_time)
+        time.sleep(SCROLL_PAUSE_SEC)
         # 스크롤이 끝에 도달하면 종료
         if i * screen_height > scroll_height:
+            time.sleep(SCROLL_PAUSE_SEC)
             break    
         i += 1
+
 def get_src_urls(url):
     driver.get(url)
     scroll_end(driver)    
@@ -28,7 +32,12 @@ def get_src_urls(url):
     res = []
     for idx in range(1, len(splits)):
         each = splits[idx]
-        img_url = each[each.find('"') + 1:each.find('jpg')] + 'jpg'        
+        if 'jpg' in each:
+            img_url = each[each.find('"') + 1:each.find('jpg')] + 'jpg'        
+        elif 'png' in each:
+            img_url = each[each.find('"') + 1:each.find('png')] + 'png'        
+        if '/undefined' in img_url:
+           continue
         res.append(img_url)
     return res
 
@@ -73,7 +82,7 @@ os.chdir(os.path.join(os.getcwd(), topic))
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
 
 last_index = 0
-start = ''# 
+start = ''#
 if last_index > 0: now = last_index 
 else : now = 0
 print(tot_srcs)
@@ -84,11 +93,13 @@ for page_url in tot_srcs:
     format_url = main_url.format(home) + page_url
     now += 1
     print(now , '/', len(tot_srcs), ':', format_url)
-    src_urls = get_src_urls(format_url)
+    src_urls = get_src_urls(format_url)    
     for img_src in src_urls: #download
         now+=1
         img_name = img_src[img_src.rfind('/')+1:]        
-        with open(str(now) + '_'+ img_name, 'wb') as img_f:
+        file_nm = str(now) + '_'+ img_name
+        print(img_src)
+        with open(file_nm, 'wb') as img_f:
             img_url = quote(img_src, safe=':/')
             request = Request(img_url, headers=headers)
             response = urlopen(request)
