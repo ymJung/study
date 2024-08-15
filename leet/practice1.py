@@ -4,12 +4,13 @@
 def solution(works, n):
     if sum(works) <= n:
         return 0
+    
     while (n > 0):
-        for idx in range(len(works)):           
-            n -=1                     
-            works[idx] -=1
-            if n == 0:
-                break
+        works.sort(reverse=True)
+        n -=1                     
+        works[0] -=1
+        if n == 0:
+            break
     res = 0
     for work in works:
         res += work**2
