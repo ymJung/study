@@ -6,7 +6,7 @@ from urllib.request import Request, urlopen
 from urllib.parse import quote
 
 
-SCROLL_PAUSE_SEC = 0.3  # 스크롤 간격 설정 (초)
+SCROLL_PAUSE_SEC = 1  # 스크롤 간격 설정 (초)
 def scroll_end(driver):
     
     screen_height = driver.execute_script("return window.screen.height;")  # 화면 높이 가져오기
@@ -36,20 +36,20 @@ def get_src_urls(url):
             img_url = each[each.find('"') + 1:each.find('jpg')] + 'jpg'        
         elif 'png' in each:
             img_url = each[each.find('"') + 1:each.find('png')] + 'png'        
-        if '/undefined' in img_url:
-           continue
+        if '/undefined' in img_url or '11toon5' in img_url :
+            continue    
         res.append(img_url)
     return res
 
-def get_src_url_from_home(home_url):
-    driver.get(home_url)
+def get_src_url_from_home(driver):
     scroll_end(driver)    
     tot_src = driver.page_source 
     splits = tot_src.split('<a href="/webtoons')
     res = []
     for idx in range(1, len(splits) -1):
         each = splits[idx]
-        a_tag = each[each.find('<a href="') + 1:each.find('html')] + 'html'        
+        a_tag = each[each.find('<a href="') + 1:each.find('html')] + 'html' 
+   
         res.append(a_tag)
     return res
 def mk_dir(d_path):
@@ -63,7 +63,6 @@ chrome_driver_path = 'D:\Dev\chromedriver.exe'
 options = webdriver.ChromeOptions() 
 options.add_argument('--headless')  # (headless 모드)
 
-driver = webdriver.Chrome(service=Service(), options=options)
 
 home = '.com'#
 topic =  '' #
@@ -72,8 +71,9 @@ main_url = "https://{}/webtoons"
 home_url = "https://{}/webtoon/{}.html".format(home, topic)
 
 mk_dir(topic)
-
-tot_srcs = get_src_url_from_home(home_url)
+driver = webdriver.Chrome(service=Service(), options=options)
+driver.get(home_url)
+tot_srcs = get_src_url_from_home(driver)
 # 한번 초기화
 driver = webdriver.Chrome(service=Service(), options=options)
 f = open('srcs.txt', 'w')
@@ -82,7 +82,7 @@ os.chdir(os.path.join(os.getcwd(), topic))
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
 
 last_index = 0
-start = ''#
+start = ''# 중간부터 안할거면 비워둠
 if last_index > 0: now = last_index 
 else : now = 0
 print(tot_srcs)
