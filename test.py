@@ -15,10 +15,10 @@ driver.get(url)
 
 
 id_input = driver.find_element(By.ID, 'SMemberID')
-id_input.send_keys('metal0')
+id_input.send_keys('')
 
 pwd_input = driver.find_element(By.ID, 'SMemberPassword')
-pwd_input.send_keys('alth7009')
+pwd_input.send_keys('')
 # time.sleep(5)
 driver.find_element(By.ID, 'btn_login').click()
 time.sleep(10)
