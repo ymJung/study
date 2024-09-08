@@ -1,6 +1,6 @@
 
 
-SRT_MOBILE = ""
+SRT_MOBILE = "https://app.srail.or.kr:443"
 API_ENDPOINTS = {
     "main": f"{SRT_MOBILE}/main/main.do",
     "login": f"{SRT_MOBILE}/apb/selectListApb01080_n.do",
@@ -97,10 +97,12 @@ def post_message(token, channel, text):
     }).json()
 
 
-o_auth = '' # slack oauth
+o_auth = ''
 srt_id = '' #membership id
 srt_pw = '!' # pwd
 channel = ''
+start = ''
+dest = ''
 
 def main():
     session = requests.session()
@@ -108,7 +110,7 @@ def main():
 
     login(session, srt_id, srt_pw)
     while (True) :
-        res = search_train(session, "", "", "", "")
+        res = search_train(session, start, dest, "20240908", "130000")
         results = filter(res)
         if len(results) > 0:
             post_message(o_auth, channel, '확인필요'+ str(results))
