@@ -12,6 +12,7 @@ HF_TOKEN = config['hf']['TOKEN']
 
 model_name = "Qwen/Qwen2.5-Coder-7B"
 model_path = "/home/zero00/Dev/datasets/models/qwen2.5-coder-7b"
+train_output_dir = model_path + "/results"
 
 tokenizer = AutoTokenizer.from_pretrained(
     model_name,
@@ -77,8 +78,9 @@ tokenized_datasets = dataset.map(
     remove_columns=dataset['train'].column_names
 )
 
+
 training_args = TrainingArguments(
-    output_dir=model_path + "/results",
+    output_dir=train_output_dir,
     evaluation_strategy="no",
     learning_rate=1e-4,
     num_train_epochs=3,
@@ -89,7 +91,7 @@ training_args = TrainingArguments(
     gradient_accumulation_steps=16,
     fp16=True,
     optim="paged_adamw_8bit",
-    save_total_limit=2,  # 체크포인트 
+    save_total_limit=4,  # 체크포인트 
     save_strategy="steps", 
     save_steps=500,  
 )
@@ -110,7 +112,7 @@ trainer = CustomTrainer(
 )
 
 # 모델 학습 시작
-trainer.train()
+trainer.train(resume_from_checkpoint=train_output_dir) # checkpoint resume
 
 # LoRA 어댑터 저장
 output_model_path = Path(model_path + "/finetuned_qwen_coder_lora")
