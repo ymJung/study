@@ -112,7 +112,7 @@ trainer = CustomTrainer(
 )
 
 # 모델 학습 시작
-trainer.train(resume_from_checkpoint=train_output_dir) # checkpoint resume
+trainer.train(resume_from_checkpoint=True) # checkpoint resume
 
 # LoRA 어댑터 저장
 output_model_path = Path(model_path + "/finetuned_qwen_coder_lora")
