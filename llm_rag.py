@@ -18,7 +18,6 @@ openai_api_key = config['openai']['TOKEN']
 VECTOR_HOST = "localhost"
 VECTOR_PORT = "19530"
 
-# 1. 문서 전처리,  청킹
 """
 PDF -> text docs
     Chunking -> LangChain ( RecursiveCharacterTextSplitter )
@@ -68,8 +67,8 @@ def process_ppt(file_path):
     return docs
 
 """
-vector db 에 연결하고, HuggingFaceEmbeddings("all-mpnet-base-v2")를 사용하여
-문서 리스트를 벡터 임베딩한 후 Milvus에 저장하여 vectorstore 객체를 반환합니다.
+store vector db (Milvus)
+    embeddings -> HuggingFaceEmbeddings("all-mpnet-base-v2")     
 """
 def setup_vector_store(documents):
     # Milvus 서버에 연결 (기본: localhost:19530)
@@ -79,8 +78,8 @@ def setup_vector_store(documents):
     return vectorstore
 
 """
-vectorstore와 LLM(기본: OpenAI의 GPT-4)을 이용하여 LangChain의 RetrievalQA 체인을 생성하고 반환합니다.
-LLM을 다른 것으로 교체하려면 llm 매개변수에 커스텀 LLM 객체를 전달하면 됩니다.
+create_retrieval_qa
+    vectordb + LLM -> RetrievalQA    
 """
 def create_retrieval_qa(vectorstore, llm=None): 
     if llm is None:
@@ -95,8 +94,9 @@ def create_retrieval_qa(vectorstore, llm=None):
 
 
 """
-사용자로부터 질의를 입력받아 RetrievalQA 체인을 통해 답변을 생성하고,
-응답 결과와 함께 각 청크의 출처(파일명 및 페이지/슬라이드 번호)를 출력합니다.
+user qa loop
+    query -> qa -> result (answer, source_docs)
+    print result
 """
 def query_loop(qa):
     print("문서 기반 질의응답 시스템을 시작합니다. (종료하려면 'exit' 입력)")
@@ -110,8 +110,8 @@ def query_loop(qa):
         answer = result.get("result", "")
         source_docs = result.get("source_documents", [])
 
-        # 관련 문서가 없는 경우 일반 응답 처리
-        if not source_docs:
+       
+        if not source_docs:  # 관련 문서가 없는 경우 일반 응답 처리
             answer = "해당 문서에서 관련 내용을 찾을 수 없습니다. 일반적인 설명을 제공합니다."
             source_str = "General Agent"
         else:
