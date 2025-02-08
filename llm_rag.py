@@ -1,38 +1,37 @@
 import os
-import fitz  # PyMuPDF
-
-from pptx import Presentation # ppt
+import fitz  # pip install PyMuPDF
+from pptx import Presentation  # pip install python-pptx
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.docstore.document import Document
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.vectorstores import Milvus
-from langchain.llms import OpenAI
-from langchain.chains import RetrievalQA
 
-from pymilvus import connections
+from langchain_huggingface import HuggingFaceEmbeddings
+
+from langchain_community.vectorstores import Qdrant
+from langchain_community.chat_models import ChatOpenAI
+
+from langchain.chains import RetrievalQA
 import configparser
 
+# 설정 파일 로드
 config = configparser.ConfigParser()
 config.read('config.cfg')
 openai_api_key = config['openai']['TOKEN']
-VECTOR_HOST = "localhost"
-VECTOR_PORT = "19530"
+
+# vector db
+QDRANT_URL = "http://localhost:6333"
 
 """
-PDF -> text docs
-    Chunking -> LangChain ( RecursiveCharacterTextSplitter )
-        ADD metadata - {text, source, page} 
+PDF -> 텍스트 문서 생성
+    - 청킹(Chunking): RecursiveCharacterTextSplitter 활용
+    - 메타데이터 추가: {source, page}
 """
 def process_pdf(file_path):
- 
     docs = []
     splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
     
     with fitz.open(file_path) as pdf:
         for page in pdf:
-            # 페이지 텍스트 추출
             text = page.get_text("text").strip()
-            # 청킹: 페이지 내 텍스트를 chunk_size 500, overlap 100로 분할
             chunks = splitter.split_text(text)
             for chunk in chunks:
                 metadata = {"source": os.path.basename(file_path), "page": page.number + 1}
@@ -40,9 +39,9 @@ def process_pdf(file_path):
     return docs
 
 """
-PPT -> text docs
-    Chunking -> pptx ( Presentation )  text, shape.text
-        ADD metadata {text, source, slide} 
+PPT -> 텍스트 문서 생성
+    - 청킹: 슬라이드 내 텍스트를 분할
+    - 메타데이터 추가: {source, slide}
 """
 def process_ppt(file_path):
     docs = []
@@ -67,23 +66,31 @@ def process_ppt(file_path):
     return docs
 
 """
-store vector db (Milvus)
-    embeddings -> HuggingFaceEmbeddings("all-mpnet-base-v2")     
+Qdrant 벡터 데이터베이스에 문서 저장
+    - HuggingFaceEmbeddings("all-mpnet-base-v2") 활용
 """
 def setup_vector_store(documents):
-    # Milvus 서버에 연결 (기본: localhost:19530)
-    connections.connect(alias="default", host=VECTOR_HOST, port=VECTOR_PORT)
+    # process_pdf나 process_ppt은 각각 리스트를 반환하므로, 전체 문서를 하나의 리스트로 합칩니다.
+    all_docs = []
+    for doc_list in documents:
+        all_docs.extend(doc_list)
+        
     embeddings = HuggingFaceEmbeddings(model_name="all-mpnet-base-v2")
-    vectorstore = Milvus.from_documents(documents, embeddings, collection_name="document_collection")
+    vectorstore = Qdrant.from_documents(
+        all_docs,
+        embeddings,
+        collection_name="document_collection",
+        url=QDRANT_URL
+    )
     return vectorstore
 
 """
-create_retrieval_qa
-    vectordb + LLM -> RetrievalQA    
+RAG 체인 생성 (벡터 DB + LLM)
 """
 def create_retrieval_qa(vectorstore, llm=None): 
     if llm is None:
-        llm = OpenAI(model_name="gpt-4", temperature=0)
+        # ChatOpenAI를 사용하며 openai_api_key를 전달해야 합니다.
+        llm = ChatOpenAI(model_name="gpt-4", temperature=0, openai_api_key=openai_api_key)
     qa = RetrievalQA.from_chain_type(
         llm=llm,
         chain_type="stuff",
@@ -92,11 +99,9 @@ def create_retrieval_qa(vectorstore, llm=None):
     )
     return qa
 
-
 """
-user qa loop
-    query -> qa -> result (answer, source_docs)
-    print result
+사용자 질의응답 루프
+    - 사용자가 입력한 질문에 대해 관련 문서와 답변을 출력합니다.
 """
 def query_loop(qa):
     print("문서 기반 질의응답 시스템을 시작합니다. (종료하려면 'exit' 입력)")
@@ -110,8 +115,7 @@ def query_loop(qa):
         answer = result.get("result", "")
         source_docs = result.get("source_documents", [])
 
-       
-        if not source_docs:  # 관련 문서가 없는 경우 일반 응답 처리
+        if not source_docs:
             answer = "해당 문서에서 관련 내용을 찾을 수 없습니다. 일반적인 설명을 제공합니다."
             source_str = "General Agent"
         else:
@@ -127,17 +131,14 @@ def query_loop(qa):
         print("답변:", answer)
         print("출처:", source_str)
 
-
-
-
 def main():
-    # 1) PDF, PPT 문서 처리
-    documents = [process_pdf(".pdf"), process_pdf(".pdf")]  
-    # 2) VECTOR 저장
+    # PDF 및 PPT 문서 처리 (예시로 두 개의 PDF 파일 사용)
+    documents = [process_pdf("pdf_file1.pdf"), process_pdf("pdf_file2.pdf")]
+    # 벡터 DB (Qdrant)에 저장
     vectorstore = setup_vector_store(documents)
-    # 3) RAG 생성
+    # RAG 체인 생성
     qa = create_retrieval_qa(vectorstore)
-    # 4) 질의 실행
+    # 질의응답 루프 실행
     query_loop(qa)
 
 if __name__ == '__main__':
