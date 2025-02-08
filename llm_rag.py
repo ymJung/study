@@ -101,7 +101,7 @@ def create_retrieval_qa(vectorstore, llm=None):
 
 """
 사용자 질의응답 루프
-    - 사용자가 입력한 질문에 대해 관련 문서와 답변을 출력합니다.
+    - 사용자가 입력한 질문에 대해 관련 문서와 답변을 출력.
 """
 def query_loop(qa):
     print("문서 기반 질의응답 시스템을 시작합니다. (종료하려면 'exit' 입력)")
@@ -115,25 +115,27 @@ def query_loop(qa):
         answer = result.get("result", "")
         source_docs = result.get("source_documents", [])
 
-        if not source_docs:
-            answer = "해당 문서에서 관련 내용을 찾을 수 없습니다. 일반적인 설명을 제공합니다."
-            source_str = "General Agent"
+        source_str = "General Agent"
+        if "내용이 없습니다" in answer or not source_docs: # 답변이 없거나, 관련 문서가 없는 경우
+            answer = "해당 질문에 대한 답변을 찾을 수 없습니다."        
+            
         else:
-            sources = []
+            sources = set()
             for doc in source_docs:
                 meta = doc.metadata
                 if "page" in meta:
-                    sources.append(f"{meta['source']} {meta['page']}페이지")
+                    sources.add(f"{meta['source']} {meta['page']}페이지")
                 elif "slide" in meta:
-                    sources.append(f"{meta['source']} {meta['slide']}슬라이드")
+                    sources.add(f"{meta['source']} {meta['slide']}슬라이드")
             source_str = ", ".join(sources)
-        
+        if "내용이 없습니다" in answer:
+            answer = "해당 질문에 대한 답변을 찾을 수 없습니다."
         print("답변:", answer)
         print("출처:", source_str)
 
 def main():
     # PDF 및 PPT 문서 처리 (예시로 두 개의 PDF 파일 사용)
-    documents = [process_pdf("pdf_file1.pdf"), process_pdf("pdf_file2.pdf")]
+    documents = [process_pdf(".pdf"), process_pdf(".pdf")]
     # 벡터 DB (Qdrant)에 저장
     vectorstore = setup_vector_store(documents)
     # RAG 체인 생성
