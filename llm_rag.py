@@ -43,8 +43,7 @@ def preprocess_image_for_ocr_alternative(image):
 
 def clean_hangul_spacing(text):
     """
-    한글 문자 사이에 있는 불필요한 공백을 제거합니다.
-    예: "쿠 팝" → "쿠팝", "비 즈 쿠 팝" → "비즈쿠팝"
+    한글 문자 사이에 있는 불필요한 공백을 제거합니다.    
     단, 영어와 숫자, 기호 등은 그대로 둡니다.
     """
     # 한글(가-힣) 뒤에 공백이 있고 그 뒤에 한글이 오는 경우를 찾아서 공백을 제거
@@ -99,7 +98,6 @@ def process_pdf(file_path, agent="general"):
                         
                         # 2. 각 라인 내에서 단어들을 좌측 좌표 순으로 정렬한 후,
                         #    가로 간격(gap)이 horizontal_gap_threshold 이상이면 다른 그룹으로 분리
-                        #    grouped_lines의 각 요소는 한 라인의 그룹 리스트 (예: ["쿠 팝", "비 즈 쿠 팝", "비 즈 메 일 러"])
                         grouped_lines = []
                         for line in sorted(lines_dict.keys()):
                             words = sorted(lines_dict[line], key=lambda x: x[0])
@@ -134,8 +132,7 @@ def process_pdf(file_path, agent="general"):
                             merged_regions.append(" ".join(region_texts))
                         
                         # 5. 모든 merged region(컬럼)을 하나의 텍스트로 합쳐서 Document 생성
-                        page_text = " ".join(merged_regions)
-                        # 후처리: 한글 단어 사이의 불필요한 공백 제거 (예: "쿠 팝" -> "쿠팝")
+                        page_text = " ".join(merged_regions)                        
                         page_text = clean_hangul_spacing(page_text)                        
                         docs.append(Document(
                             page_content=page_text,
