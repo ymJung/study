@@ -1,3 +1,20 @@
+""" dockerfile
+FROM python:3.10-slim
+
+WORKDIR /app
+
+RUN apt-get update && \
+    apt-get install -y tesseract-ocr tesseract-ocr-kor libgl1-mesa-glx libglib2.0-0 && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+CMD ["python", "llm_rag.py"]
+
+"""
+
+
 import os
 import io
 import json
@@ -255,7 +272,7 @@ def load_agent_routing_rules(filepath="agent_routing_rules.json"):
         return [
             {"agent": "deepseek", "keywords": ["강화학습", "deepseek"]},
             {"agent": "brochure", "keywords": ["서비스"]},
-            {"agent": "rule", "keywords": ["남녀고용평등법", "회사"]}
+            {"agent": "rule", "keywords": ["회사"]}
         ]
 
 # 전역 변수로 라우팅 규칙 로드
