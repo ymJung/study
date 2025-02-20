@@ -1,4 +1,21 @@
-""" dockerfile
+""" requirements.txt
+# PDF 처리 및 PPT 처리 관련
+PyMuPDF==1.25.3
+python-pptx==1.0.2
+# 이미지 처리 및 OCR
+opencv-python==4.11.0.86
+numpy==1.26.4
+Pillow==11.0.0
+pytesseract==0.3.13
+
+# LangChain 및 벡터 DB 관련 (사용하는 LangChain 모듈에 따라 버전 조정)
+langchain==0.3.17
+langchain-community==0.3.16
+langchain-openai==0.3.4
+langchain-huggingface==0.1.2
+faiss-cpu==1.10.0
+"""
+""" Dockerfile
 FROM python:3.10-slim
 
 WORKDIR /app
