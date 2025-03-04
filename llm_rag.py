@@ -50,6 +50,7 @@ from langchain_openai import ChatOpenAI
 from langchain.chains import RetrievalQA
 import configparser
 import re
+import requests
 
 # ============================================================
 # 설정 파일 로드 (config.cfg 파일 필요: [openai] TOKEN = <API_KEY>)
@@ -57,6 +58,47 @@ import re
 config = configparser.ConfigParser()
 config.read('config.cfg')
 openai_api_key = config['openai']['TOKEN']
+
+
+# LLM 공급자 관련 설정
+llm_provider = config.get('llm', 'PROVIDER', fallback='gpt4')
+ollama_api_url = config.get('llm', 'OLLAMA_API_URL', fallback='http://localhost:11434')
+ollama_model = config.get('llm', 'OLLAMA_MODEL', fallback='llama3')
+
+# ============================================================
+# Ollama API 호출을 위한 LLM 클래스 (ChatOllama)
+# ============================================================
+class ChatOllama:
+    def __init__(self, model_name="", temperature=0, api_url="http://localhost:11434"):
+        self.model_name = model_name
+        self.temperature = temperature
+        self.api_url = api_url
+
+    def invoke(self, prompt: str):
+        payload = {
+            "model": self.model_name,
+            "prompt": prompt,
+            "temperature": self.temperature
+        }
+        response = requests.post(f"{self.api_url}/api/generate", json=payload)
+        if response.status_code == 200:
+            result = response.json()
+            return result.get("response", "")
+        else:
+            raise Exception(f"Ollama API error: {response.status_code}, {response.text}")
+
+
+# ============================================================
+# get_llm: 설정에 따라 적절한 LLM 인스턴스 반환 (GPT-4 또는 Ollama)
+# ============================================================
+def get_llm():
+    if llm_provider.lower() == "ollama":
+        return ChatOllama(model_name=ollama_model, temperature=0, api_url=ollama_api_url)
+    else:
+        return ChatOpenAI(model_name="gpt-4", temperature=0, openai_api_key=openai_api_key)
+
+
+
 
 # ============================================================
 # 전처리 함수: 이미지 OCR 전처리 및 한글 띄어쓰기 정리
@@ -252,7 +294,7 @@ def setup_vector_store(documents):
 # ============================================================
 def create_retrieval_qa(vectorstore, llm=None):
     if llm is None:
-        llm = ChatOpenAI(model_name="gpt-4", temperature=0, openai_api_key=openai_api_key)
+        llm = get_llm()
     qa = RetrievalQA.from_chain_type(
         llm=llm,
         chain_type="stuff",
