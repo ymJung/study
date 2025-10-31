@@ -396,11 +396,11 @@ https://github.com/kakaopaycoding-server/2022-metalbird0-gmail.com.git
 ● 메뉴별 주문 횟수가 정확해야 합니다.
 ```
 
-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
 
 
 rvc
     data process feature train model 학습끝난후 train featrue index
+
 
 
 
