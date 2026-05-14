@@ -1,5 +1,5 @@
 #!/bin/bash
-# 동행복권 로또 자동구매 스크립트
+# 자동구매 스크립트
 # 목요일 08:00 실행, 3게임 자동구매
 
 cd /home/ymjung/git/sggul-strategy
